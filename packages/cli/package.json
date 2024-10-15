@@ -1,0 +1,17 @@
+{
+  "name": "@whiteangel13/angel",
+  "module": "index.ts",
+  "bin": {
+    "angel": "./index.ts"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  }
+}
