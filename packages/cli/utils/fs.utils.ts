@@ -1,3 +1,5 @@
+import type { Stats } from "fs";
+import { readFile } from "fs/promises";
 import { writeFile } from "fs/promises";
 import { stat, mkdir } from "fs/promises";
 import { dirname } from "path";
@@ -14,12 +16,14 @@ const assertDir = async (path: string) => {
   }
 };
 
-export const touchFile = async (path: string): Promise<void> => {
+export const touchFile = async (path: string): Promise<string> => {
   try {
-    const fileStat = await stat(path);
-    if (!fileStat.isFile()) throw new Error(`${path} is not a file`);
+    const stats = await stat(path);
+    if (!stats.isFile()) throw new Error(`${path} is not a file`);
+    const fileContent = await readFile(path, "utf-8");
+    return fileContent;
   } catch (e) {
-    await writeFile(path, "");
+    await writeFileSafe(path, "");
     return touchFile(path);
   }
 };

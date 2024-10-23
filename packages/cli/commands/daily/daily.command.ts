@@ -1,12 +1,14 @@
-import { Command } from "commander";
+import { Argument, Command } from "commander";
 import { join } from "path";
 import { readFile } from "fs/promises";
-import { writeFileSafe } from "../../utils";
+import { touchFile, writeFileSafe } from "../../utils";
+import { exec } from "child_process";
 import { DIARY_PATH } from "../../utils/paths.utils";
 
 export const AngelDailyCommand = new Command()
   .name("daily")
-  .action(async () => {
+  .addArgument(new Argument("[subcommand]", "Can be 'open'"))
+  .action(async (subcommand) => {
     const date = new Date();
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -16,5 +18,13 @@ export const AngelDailyCommand = new Command()
     const templatePath = join(__dirname, "daily.template.md");
     const template = await readFile(templatePath, "utf-8");
 
-    await writeFileSafe(path, template);
+    const file = await touchFile(path);
+
+    if (file === "") {
+      await writeFileSafe(path, template);
+    }
+
+    if (subcommand === "open") {
+      exec(`code ${path}`);
+    }
   });
